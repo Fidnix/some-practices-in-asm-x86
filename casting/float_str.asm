@@ -1,30 +1,81 @@
 section .data
-    num dd 12.7
-    unit dd 1.0
+    num dd 123.75
+    ten dd 10.0
+    zero dd 0.0
 
 section .bss
-    output db 15
+    output resb 15
 
 section .text
     global _start
 _start:
-    xor rcx, rcx
-
     movss xmm0, [num]
-    cvtss2si eax, xmm0
+    cvttss2si eax, xmm0
+
     cvtsi2ss xmm1, eax
+    subss xmm0, xmm1
+    
+    xor rcx, rcx
+    mov r8d, 10
+    _int_2_str:
+        div r8d
+        add dl, 48
+        mov [output + rcx], dl
+        inc rcx
 
-    ucomiss xmm0, xmm1
-    jae _next_step
+        xor rdx, rdx
+        cmp eax, 9
+        jg _int_2_str
 
-    sub eax, 1
-    subss xmm1, [unit]
+    add al, 48
+    mov [output + rcx], al
 
-    _next_step:
+    xor rbx, rbx
+    xor rdx, rdx
+    mov r8, 0
+    mov r9, rcx
+    _str_al_reves:
+        mov bl, [output + r8]
+        mov dl, [output + r9]
 
-    ; --- continuara
+        mov [output + r8], dl
+        mov [output + r9], bl
+
+        inc r8
+        dec r9
+
+        cmp r9, r8
+        jg _str_al_reves
+
+    inc rcx
+    mov bl, 46
+    mov [output + rcx], bl
+    inc rcx
+
+    xorps xmm2, xmm2
+    _dec_str:
+        mulss xmm0, [ten]
+        cvttss2si eax, xmm0
+        cvtsi2ss xmm2, eax
+        add eax, 48
+        mov [output + rcx], al
+        inc rcx
+
+        subss xmm0, xmm2
+        ucomiss xmm0, [zero]
+        jne _dec_str
+
+        cmp rcx, 15
+        jl _dec_str
     
     _cp:
+
+    mov rax, 1
+    mov rdi, 1
+    mov rsi, output
+    mov rdx, 15
+    syscall
+
 
     mov rax, 60
     mov rdi, 0

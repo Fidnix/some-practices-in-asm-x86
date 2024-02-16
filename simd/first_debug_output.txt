@@ -1,0 +1,11 @@
++break _end
+Punto de interrupción 1 at 0x401010
++run
+Starting program: /media/fidel/Other things/Dev/lenguajes/Asm.x86/simd/out 
+
+Breakpoint 1, 0x0000000000401010 in _end ()
++p $xmm0.v4_float
+$1 = {2, 3, 4, 5}
++p $xmm1.v4_float
+$3 = {10, 11, 12, 13}
++q
